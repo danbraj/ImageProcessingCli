@@ -26,11 +26,7 @@ namespace GProject.Models
                     var data = result.Groups;
                     if (data.Count == 3)
                     {
-                        return new Arguments() {
-                            Command = command,
-                            BitmapFile = data[1].Value,
-                            Extension = data[2].Value
-                        };
+                        return new Arguments(command, data[1].Value, data[2].Value);
                     }
                 }
             }

@@ -5,9 +5,16 @@ namespace GProject.Models
 {
     class Arguments
     {
-        public Command Command { get; set; }
-        public string BitmapFile { get; set; }
-        public string Extension { get; set; }
+        public Command Command { get; }
+        public string BitmapFile { get; }
+        public string Extension { get; }
+
+        public Arguments(Command command, string bitmapFile, string extension)
+        {
+            this.Command = command;
+            this.BitmapFile = bitmapFile;
+            this.Extension = extension;
+        }
 
         public string GetFullBitmapFile()
         {
