@@ -1,0 +1,9 @@
+.vscode
+bin
+obj
+
+todo
+*.jpg
+*.bmp
+*.png
+*.txt
