@@ -5,6 +5,8 @@ namespace GProject.Enums
         None,
         Negative,
         Grayscale,
-        Sepia
+        Sepia,
+        Encode,
+        Decode
     }
 }

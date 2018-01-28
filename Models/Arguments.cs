@@ -8,12 +8,14 @@ namespace GProject.Models
         public Command Command { get; }
         public string BitmapFile { get; }
         public string Extension { get; }
+        public string TextToEncoding { get; }
 
-        public Arguments(Command command, string bitmapFile, string extension)
+        public Arguments(Command command, string bitmapFile, string extension, string textToEncoding = "")
         {
             this.Command = command;
             this.BitmapFile = bitmapFile;
             this.Extension = extension;
+            this.TextToEncoding = textToEncoding;
         }
 
         public string GetFullBitmapFile()
