@@ -2,8 +2,9 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using GProject.Enums;
-using GProject.Models;
+using GProject.Models.ArgumentsParser;
+using GProject.Models.Enums;
+using GProject.Models.ImageProcessing;
 
 namespace GProject
 {
@@ -11,67 +12,62 @@ namespace GProject
     {
         static void Main(string[] args)
         {
-            var arguments = ArgumentsParser.ParseArguments(args);
-            if (arguments != null)
+            var argsResult = ArgumentsParser.ParseArguments(args);
+            if (argsResult != null)
             {
-                string bitmapFileName = arguments.GetFullBitmapFile();
+                string bitmapFileName = argsResult.BitmapFile;
                 bool isFileExists = File.Exists(bitmapFileName);
                 if (isFileExists)
                 {
-                    Bitmap bitmap;
-                    if (arguments.Command == Command.Decode)
+                    var currentCommand = argsResult.Command;
+
+                    var processingCommands = Command.Negative | Command.Grayscale | Command.Sepia;
+                    var codingCommands = Command.Encode | Command.Decode;
+
+                    Bitmap bitmap = currentCommand == Command.Decode ? new Bitmap(bitmapFileName) : new Bitmap(Image.FromFile(bitmapFileName));
+
+                    if ((processingCommands & currentCommand) == currentCommand)
                     {
-                        bitmap = new Bitmap(bitmapFileName);
+                        ImageProcessing imageProcessing;
+
+                        if (currentCommand == Command.Negative)
+                        {
+                            imageProcessing = new NegativeImageConverter(bitmap);
+                        }
+                        else if (currentCommand == Command.Grayscale)
+                        {
+                            imageProcessing = new GrayscaleImageConverter(bitmap);
+                        }
+                        else
+                        {
+                            imageProcessing = new SepiaImageConverter(bitmap);
+                        }
+
+                        imageProcessing.Convert().Save(argsResult.OutcomeBitmapFile);
                     }
-                    else
+                    else if ((codingCommands & currentCommand) == currentCommand)
                     {
-                        var image = Image.FromFile(bitmapFileName);
-                        bitmap = new Bitmap(image);
-                    }
+                        var textCoding = new TextCoding(bitmap);
 
-                    switch (arguments.Command)
-                    {
-                        case Command.Negative:
-
-                            ImageProcessing.ConvertToNegative(bitmap);
-                            bitmap.Save(arguments.GetChangedBitmapFile("negative"));
-
-                            break;
-                        case Command.Grayscale:
-
-                            ImageProcessing.ConvertToGray(bitmap);
-                            bitmap.Save(arguments.GetChangedBitmapFile("grayscale"));
-
-                            break;
-                        case Command.Sepia:
-
-                            ImageProcessing.ConvertToSepia(bitmap);
-                            bitmap.Save(arguments.GetChangedBitmapFile("sepia"));
-
-                            break;
-                        case Command.Encode:
-
-                            int maxLength = ImageProcessing.CalculateTextMaxLengthToEncode(bitmap);
-
-                            WriteLine($"Długość tekstu do zakodowania: {arguments.TextToEncoding.Length} / {maxLength}", ConsoleColor.Cyan);
-                            // TODO: gdy dł. tekstu jest większa od dł. pętli po wszystkich pikselach
-                            
-                            ImageProcessing.EncodeTextIn(bitmap, arguments.TextToEncoding);
-                            bitmap.Save(arguments.GetChangedBitmapFile("encode"), ImageFormat.Png);
-
-                            break;
-                        case Command.Decode:
-
-                            string message = ImageProcessing.DecodeTextFrom(bitmap);
+                        if (currentCommand == Command.Encode)
+                        {
+                            WriteLine($"Długość tekstu do zakodowania: {argsResult.TextToEncoding.Length}", ConsoleColor.Cyan);
+                            textCoding.Encode(argsResult.TextToEncoding);
+                            textCoding.GetBitmap().Save(argsResult.OutcomeBitmapFile, ImageFormat.Png);
+                            if (textCoding.IsOutRange)
+                            { 
+                                WriteLine($"Ostrzeżenie: Zabrakło wolnych bitów do zakodowania!", ConsoleColor.Yellow);
+                            }
+                        }
+                        else if (currentCommand == Command.Decode)
+                        {
+                            string message = textCoding.Decode();
                             Console.WriteLine($"Odkodowana wiadomość:\n\n{message}\n");
-
-                            break;
-                        default:
-                            break;
+                        }
                     }
                     WriteLine("Gotowe!", ConsoleColor.Green);
                 }
-                else 
+                else
                 {
                     WriteLine("Nie ma takiego pliku!", ConsoleColor.Yellow);
                 }
@@ -89,11 +85,11 @@ $@"Użycie:  app [command] [bitmap-file]
          app --encode [bitmap-file] ""[text]
 
 command:
-    -n|--negative   Obraca kolory w obrazie
-    -g|--grayscale  Zamienia obraz na czarno-biały
-    -s|--sepia      Stosuje filtr sepia do obrazu
-    -e|--encode     Ukrywa tekst w obrazie
-    -d|--decode     Wyświetla ukryty tekst w obrazie
+    -n|--negative       Obraca kolory w obrazie
+    -g|--grayscale      Zamienia obraz na czarno-biały
+    -s|--sepia          Stosuje filtr sepia do obrazu
+    -e|--encode         Ukrywa tekst w obrazie
+    -d|--decode         Wyświetla ukryty tekst w obrazie
     
 bitmap-file:
     Ścieżka do pliku graficznego (*.bmp, *.png, *.jpg)

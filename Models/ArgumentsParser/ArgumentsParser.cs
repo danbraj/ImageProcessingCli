@@ -1,11 +1,11 @@
 using System.Text.RegularExpressions;
-using GProject.Enums;
+using GProject.Models.Enums;
 
-namespace GProject.Models
+namespace GProject.Models.ArgumentsParser
 {
     static class ArgumentsParser
     {
-        public static Arguments ParseArguments(string[] args)
+        public static ArgumentsParsingResult ParseArguments(string[] args)
         {
             if (args.Length >= 2)
             {
@@ -30,7 +30,7 @@ namespace GProject.Models
                     var data = result.Groups;
                     if (data.Count == 3)
                     {
-                        return new Arguments(command, data[1].Value, data[2].Value, args.Length > 2 ? args[2] : "");
+                        return new ArgumentsParsingResult(command, data[1].Value, data[2].Value, args.Length > 2 ? args[2] : "");
                     }
                 }
             }
