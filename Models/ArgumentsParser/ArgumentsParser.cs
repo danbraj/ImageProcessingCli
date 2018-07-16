@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
-using GProject.Models.Enums;
+using ImageProcessingCli.Models.Enums;
 
-namespace GProject.Models.ArgumentsParser
+namespace ImageProcessingCli.Models.ArgumentsParser
 {
     static class ArgumentsParser
     {

@@ -1,7 +1,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace GProject.Models.ImageProcessing
+namespace ImageProcessingCli.Models.ImageProcessing
 {
     class SepiaImageConverter : ImageProcessing
     {
@@ -14,6 +14,7 @@ namespace GProject.Models.ImageProcessing
 
         private Bitmap ColorMatrixConvertMethod()
         {
+            // FIXME: nowa taka bitmapa zajmuje dużo więcej mniejsca na dysku
             Bitmap newBitmap = new Bitmap(bitmap.Width, bitmap.Height);
 
             Graphics g = Graphics.FromImage(newBitmap);

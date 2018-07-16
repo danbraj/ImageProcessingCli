@@ -1,6 +1,6 @@
 using System;
 
-namespace GProject.Models.Enums
+namespace ImageProcessingCli.Models.Enums
 {
     [Flags]
     enum Command

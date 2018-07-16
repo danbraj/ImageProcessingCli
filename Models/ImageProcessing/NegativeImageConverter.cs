@@ -1,7 +1,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace GProject.Models.ImageProcessing
+namespace ImageProcessingCli.Models.ImageProcessing
 {
     class NegativeImageConverter : ImageProcessing
     {

@@ -1,7 +1,7 @@
 using System.Drawing;
-using GProject.Models.Enums;
+using ImageProcessingCli.Models.Enums;
 
-namespace GProject.Models.ArgumentsParser
+namespace ImageProcessingCli.Models.ArgumentsParser
 {
     class ArgumentsParsingResult
     {
@@ -14,7 +14,7 @@ namespace GProject.Models.ArgumentsParser
         {
             this.Command = command;
             this.BitmapFile = $"{bitmapFile}.{extension}";
-            this.OutcomeBitmapFile = $"{bitmapFile}_modified.{extension}";
+            this.OutcomeBitmapFile = $"{bitmapFile}.m.{extension}";
             this.TextToEncoding = textToEncoding;
         }
     }

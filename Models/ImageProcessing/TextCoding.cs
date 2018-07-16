@@ -2,13 +2,9 @@ using System;
 using System.Drawing;
 using System.Text;
 
-namespace GProject.Models.ImageProcessing
+namespace ImageProcessingCli.Models.ImageProcessing
 {
-    /*
-        NOTE:
-        - kodowanie i dekodowanie odbywa się tylko na ostatnich bitach komponentów piksela
-    */
-
+    // TODO: to improve and refactor
     class TextCoding
     {
         public bool IsOutRange { get; private set; }
