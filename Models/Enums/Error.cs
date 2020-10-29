@@ -1,13 +1,13 @@
 using System;
 
-namespace ImageProcessingCli.Models.Enums
+namespace ImageProcessingCli.Core.Enums
 {
-    [Flags]
-    enum Error
-    {
-        Ok = 0,
-        ArgsParse = 1,
-        NoFileExists = 2,
-        UnknownCommand = 4
-    }
+  [Flags]
+  enum Error
+  {
+    Ok = 0,
+    ArgsParse = 1,
+    NoFileExists = 2,
+    UnknownCommand = 4
+  }
 }
