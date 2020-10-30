@@ -7,7 +7,8 @@ namespace ImageProcessingCli.Core.Enums
   {
     Ok = 0,
     ArgsParse = 1,
-    NoFileExists = 2,
-    UnknownCommand = 4
+    UnknownCommand = 2,
+    NoFileExists = 4,
+    ProcessingException = 8
   }
 }

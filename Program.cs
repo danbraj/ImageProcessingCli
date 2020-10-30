@@ -1,92 +1,71 @@
-﻿using ImageProcessingCli.Core.ArgsParser;
-using Log = ImageProcessingCli.Core.Logger.Logger;
+﻿using System;
+using ImageProcessingCli.Core.Arguments;
+using ImageProcessingCli.Core.Command;
+using ImageProcessingCli.Core.Enums;
+using ImageProcessingCli.Core.Logger;
 
 namespace ImageProcessingCli
 {
   class Program
   {
-    static void Main(string[] args)
+    static int Main(string[] args)
     {
-      var argsParsingResult = ArgsParser.ParseArguments(args);
-      var result = ImageProcessing.Process(argsParsingResult);
-      Log.WriteResult(result);
-    }
-    /*
-    static readonly Command codingCommands = Command.Encode | Command.Decode;
-    static readonly Command processingCommands = Command.Negative | Command.Grayscale | Command.Sepia;
+      ArgumentAdapter argumentAdapter = new ArgumentAdapter(args);
+      ArgumentPayload ap = argumentAdapter.Parse();
+      if (ap == null) 
+      {
+        ApplicationUsage();
+        return 1;
+      }
 
-    static Error Execute(string[] args)
+      Command command;
+      switch (ap.ProcessingCommand)
+      {
+        case Processing.Negative:
+          command = new NegativeCommand(ap.BitmapPath, ap.OutcomeBitmapPath);
+          break;
+        case Processing.Grayscale:
+          command = new GrayscaleCommand(ap.BitmapPath, ap.OutcomeBitmapPath);
+          break;
+        case Processing.Sepia:
+          command = new SepiaCommand(ap.BitmapPath, ap.OutcomeBitmapPath);
+          break;
+        case Processing.Encode:
+          command = new TextCodingCommand(ap.BitmapPath, ap.OutcomeBitmapPath, ap.TextToEncoding);
+          break;
+        case Processing.Decode:
+          command = new TextDecodingCommand(ap.BitmapPath);
+          break;
+        case Processing.Bluish:
+          command = new BluishCommand(ap.BitmapPath, ap.OutcomeBitmapPath);
+          break;
+        default:
+          LoggerFacade.Warn("Niepoprawna akcja!");
+          return 2;
+      }
+      command.Execute();
+      LoggerFacade.Success("Gotowe!");
+      return 0;
+    }
+
+    private static void ApplicationUsage()
     {
-      var argsResult = ArgumentsParser.ParseArguments(args);
-
-      if (argsResult != null)
-      {
-        string bitmapFileName = argsResult.BitmapFile;
-        bool isFileExists = File.Exists(bitmapFileName);
-
-        if (isFileExists)
-        {
-          var currentCommand = argsResult.Command;
-
-          Bitmap bitmap = currentCommand == Command.Encode ? new Bitmap(Image.FromFile(bitmapFileName)) : new Bitmap(bitmapFileName);
-
-          if ((currentCommand & processingCommands) == currentCommand)
-          {
-            ImageProcessing imageProcessing;
-
-            switch (currentCommand)
-            {
-              case Command.Negative:
-                imageProcessing = new NegativeImageConverter(bitmap);
-                break;
-              case Command.Grayscale:
-                imageProcessing = new GrayscaleImageConverter(bitmap);
-                break;
-              case Command.Sepia:
-                imageProcessing = new SepiaImageConverter(bitmap);
-                break;
-              default:
-                return Error.UnknownCommand;
-            }
-
-            imageProcessing.Convert().Save(argsResult.OutcomeBitmapFile);
-          }
-          else if ((currentCommand & codingCommands) == currentCommand)
-          {
-            var textCoding = new TextCoding(bitmap);
-
-            if (currentCommand == Command.Encode)
-            {
-              Log.WriteLine($"Długość tekstu do zakodowania: {argsResult.TextToEncoding.Length}", ConsoleColor.Cyan);
-              textCoding.Encode(argsResult.TextToEncoding);
-              textCoding.GetBitmap().Save(argsResult.OutcomeBitmapFile, ImageFormat.Png);
-              if (textCoding.IsOutRange)
-              {
-                Log.WriteLine($"Ostrzeżenie: Zabrakło wolnych bitów do zakodowania!", ConsoleColor.Yellow);
-              }
-            }
-            else if (currentCommand == Command.Decode)
-            {
-              string message = textCoding.Decode();
-              Log.WriteLine($"Odkodowana wiadomość:\n\n{message}\n", ConsoleColor.White);
-            }
-          }
-          else
-          {
-            return Error.UnknownCommand;
-          }
-          return Error.Ok;
-        }
-        else
-        {
-          return Error.NoFileExists;
-        }
-      }
-      else
-      {
-        return Error.ArgsParse;
-      }
+      Console.WriteLine(
+$@"Użycie:  app [command] [bitmap-file]
+         app --encode [bitmap-file] ""[text]
+command:
+    -n|--negative       Obraca kolory w obrazie
+    -g|--grayscale      Zamienia obraz na czarno-biały
+    -s|--sepia          Stosuje filtr sepia do obrazu
+    -b|--bluish         Stosuje filtr bluish do obrazu
+    -e|--encode         Ukrywa tekst w obrazie
+    -d|--decode         Wyświetla ukryty tekst w obrazie
+    
+bitmap-file:
+    Ścieżka do pliku graficznego (*.bmp, *.png, *.jpg)
+text:
+    Tekst do zakodowania"
+      );
     }
-    */
   }
 }

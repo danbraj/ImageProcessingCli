@@ -1,13 +1,19 @@
 using System.Drawing;
 
-namespace ImageProcessingCli.Core.ImageProcessor
+namespace ImageProcessingCli.Core.Command
 {
-  class GrayscaleImageProcessor : ImageProcessor
+  class GrayscaleCommand : Command
   {
-    public GrayscaleImageProcessor(Bitmap bitmap) : base(bitmap) {}
+    private string outcomeBitmapPath;
 
-    public override Bitmap Convert()
+    public GrayscaleCommand(string bitmapPath, string outcomeBitmapPath) : base(bitmapPath)
     {
+      this.outcomeBitmapPath = outcomeBitmapPath;
+    }
+
+    public override void Execute()
+    {
+      Bitmap bitmap = new Bitmap(bitmapPath);
       Color oldColor, newColor;
 
       for (int y = 0; y < bitmap.Height; y++)
@@ -24,7 +30,8 @@ namespace ImageProcessingCli.Core.ImageProcessor
           bitmap.SetPixel(x, y, newColor);
         }
       }
-      return bitmap;
+
+      bitmap.Save(outcomeBitmapPath);
     }
   }
 }
